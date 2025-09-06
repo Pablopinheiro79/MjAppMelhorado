@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro - MJ App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+</head>
+<body>
+  <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100" role="main">
+    <img alt="Logo da empresa MJ, representando serviços médicos" class="logo-mj" src="LOGO MJ.jpeg" />
+    <h3 class="text-center gold mb-4">Cadastro de Médico</h3>
+    <div class="w-100" style="max-width: 400px;">
+      <form id="cadastroForm" role="form">
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome completo:</label>
+          <input aria-describedby="nome-error" class="form-control" id="nome" placeholder="Digite seu nome" required />
+          <div class="sr-only" id="nome-error">Campo obrigatório</div>
+        </div>
+        <div class="mb-3">
+          <label for="cpf" class="form-label">CPF:</label>
+          <input aria-describedby="cpf-error" class="form-control" id="cpf" placeholder="Digite seu CPF completo" required />
+          <div class="sr-only" id="cpf-error">Campo obrigatório</div>
+        </div>
+        <div class="mb-3">
+          <label for="senha" class="form-label">Senha:</label>
+          <input class="form-control" id="senha" placeholder="Crie uma senha forte" required type="password" />
+        </div>
+        <div class="mb-3">
+          <label for="confirmaSenha" class="form-label">Confirmar Senha:</label>
+          <input class="form-control" id="confirmaSenha" placeholder="Confirme sua senha" required type="password" />
+        </div>
+        <button aria-label="Cadastrar médico" class="btn btn-gold w-100 mt-2" type="submit">Cadastrar</button>
+      </form>
+      <div class="text-center mt-3">
+        <a href="index.html" class="gold text-decoration-none">Já tenho cadastro</a>
+      </div>
+    </div>
+    <div id="loader">Carregando...</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="cadastro.js"></script>
+</body>
+</html>

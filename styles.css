@@ -1,0 +1,107 @@
+/* style.css - Atualizado com variáveis, responsividade e acessibilidade */
+:root {
+  --gold-color: #d4af37;
+  --dark-bg: #000;
+  --text-color: #fff;
+  --input-bg: #111;
+  --border-color: #333;
+  --placeholder-color: #ccc; /* Melhorado para contraste */
+  --hover-gold: #c29e2e;
+}
+
+/* Fundo geral com suporte a dark mode */
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 0;
+  margin: 0;
+  transition: background-color 0.3s ease; /* Para dark mode */
+}
+
+/* Logo do MJ com responsividade */
+.logo-mj {
+  width: 120px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Media queries para mobile */
+@media (max-width: 768px) {
+  .logo-mj {
+    width: 80px; /* Ajustado para telas pequenas */
+  }
+  body {
+    font-size: 14px; /* Melhor legibilidade */
+  }
+}
+
+/* Título com variável */
+.gold {
+  color: var(--gold-color);
+  font-weight: bold;
+}
+
+/* Estilo dos inputs com acessibilidade */
+.form-control {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--gold-color); /* Destaque para foco */
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: var(--placeholder-color);
+}
+
+/* Botão dourado com hover aprimorado */
+.btn-gold {
+  background-color: var(--gold-color);
+  color: var(--dark-bg);
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-gold:hover {
+  background-color: var(--hover-gold);
+  transform: scale(1.05); /* Efeito sutil */
+}
+
+/* Loader personalizado */
+#loader {
+  display: none;
+  text-align: center;
+  margin-top: 10px;
+  color: var(--gold-color);
+  font-weight: bold;
+}
+
+/* Link para cadastro com acessibilidade */
+a.gold {
+  color: var(--gold-color);
+}
+
+a.gold:hover {
+  text-decoration: underline;
+}
+
+/* Suporte a leitores de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

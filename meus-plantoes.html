@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meus Plantões - MJ App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body class="bg-dark text-white">
+  <div class="container py-5" role="main">
+    <!-- Logo e Título -->
+    <div class="text-center mb-4">
+      <img alt="Logo da empresa MJ, representando serviços médicos" class="logo-mj" src="LOGO MJ.jpeg" />
+      <h2 class="gold mt-3">Meus Plantões</h2>
+      <p class="text-muted">Veja seus plantões registrados com filtros por mês/ano e hospital.</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-2">
+        <label for="mesAno" class="form-label">Mês/Ano:</label>
+        <select class="form-control" id="mesAno" aria-describedby="mesAno-error">
+          <option value="Todos">Todos</option>
+          <!-- Opções serão preenchidas via JS -->
+        </select>
+        <div class="sr-only" id="mesAno-error">Filtro para mês/ano</div>
+      </div>
+      <div class="col-md-6 mb-2">
+        <label for="filtroHospital" class="form-label">Hospital:</label>
+        <select class="form-control" id="filtroHospital" aria-describedby="hospital-error">
+          <option value="Todos">Todos</option>
+          <option value="Pedro I">Pedro I</option>
+          <option value="Edglay">Edglay</option>
+          <option value="Unimed">Unimed</option>
+          <option value="ISEA">ISEA</option>
+        </select>
+        <div class="sr-only" id="hospital-error">Filtro para hospital</div>
+      </div>
+    </div>
+
+    <!-- Tabela de Plantões -->
+    <div class="table-responsive mb-4">
+      <table class="table table-dark table-striped">
+        <thead class="table-secondary text-dark">
+          <tr>
+            <th>Data</th>
+            <th>Hora Início</th>
+            <th>Hora Fim</th>
+            <th>Hospital</th>
+            <th>Horas Trabalhadas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Conteúdo será inserido via JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Contador de Plantões -->
+    <div class="mb-4 text-end gold fw-bold" id="contador">
+      <!-- Contador será inserido via JS -->
+    </div>
+
+    <!-- Botão Exportar e Voltar -->
+    <div class="text-center">
+      <button aria-label="Exportar dados para CSV" class="btn btn-gold me-2" onclick="exportarCSV()">Exportar para CSV</button>
+      <a href="registrar.html" class="btn btn-outline-light">Voltar ao Registro</a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="meus-plantoes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
