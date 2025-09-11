@@ -1,107 +1,187 @@
-/* style.css - Atualizado com variáveis, responsividade e acessibilidade */
-:root {
-  --gold-color: #d4af37;
-  --dark-bg: #000;
-  --text-color: #fff;
-  --input-bg: #111;
-  --border-color: #333;
-  --placeholder-color: #ccc; /* Melhorado para contraste */
-  --hover-gold: #c29e2e;
-}
-
-/* Fundo geral com suporte a dark mode */
-body {
-  background-color: var(--dark-bg);
-  color: var(--text-color);
-  font-family: 'Segoe UI', sans-serif;
-  padding: 0;
+/* ===== Reset básico ===== */
+* {
   margin: 0;
-  transition: background-color 0.3s ease; /* Para dark mode */
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Logo do MJ com responsividade */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #000;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+/* ===== Logo ===== */
 .logo-mj {
-  width: 120px;
-  height: auto;
+  width: 100px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+/* ===== Títulos ===== */
+h2 {
   margin-bottom: 20px;
 }
 
-/* Media queries para mobile */
-@media (max-width: 768px) {
-  .logo-mj {
-    width: 80px; /* Ajustado para telas pequenas */
-  }
-  body {
-    font-size: 14px; /* Melhor legibilidade */
-  }
-}
-
-/* Título com variável */
 .gold {
-  color: var(--gold-color);
-  font-weight: bold;
+  color: #d4af37;
 }
 
-/* Estilo dos inputs com acessibilidade */
-.form-control {
-  background-color: var(--input-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  border-radius: 6px;
-  transition: border-color 0.2s ease;
-}
-
-.form-control:focus {
-  border-color: var(--gold-color); /* Destaque para foco */
-  outline: none;
-}
-
-.form-control::placeholder {
-  color: var(--placeholder-color);
-}
-
-/* Botão dourado com hover aprimorado */
-.btn-gold {
-  background-color: var(--gold-color);
-  color: var(--dark-bg);
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.btn-gold:hover {
-  background-color: var(--hover-gold);
-  transform: scale(1.05); /* Efeito sutil */
-}
-
-/* Loader personalizado */
-#loader {
-  display: none;
+/* ===== Container ===== */
+.container.centralizado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-top: 10px;
-  color: var(--gold-color);
+  width: 100%;
+}
+
+/* ===== Card de formulário ===== */
+.form-card {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+/* ===== Campos ===== */
+.campo {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 5px;
+  color: #d4af37;
   font-weight: bold;
 }
 
-/* Link para cadastro com acessibilidade */
-a.gold {
-  color: var(--gold-color);
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #111;
+  color: #fff;
+  font-size: 16px;
 }
 
-a.gold:hover {
+/* ===== Linha dupla (data + hora) ===== */
+.linha-dupla {
+  display: flex;
+  gap: 10px;
+}
+.linha-dupla .campo {
+  flex: 1;
+}
+
+/* ===== Radios em duas colunas ===== */
+.radio-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  text-align: left;
+}
+
+.radio-group label {
+  color: #fff;
+  font-size: 16px;
+}
+
+/* ===== Botões padronizados ===== */
+button,
+.btn-gold,
+.btn-link {
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+/* Botões principais dourados */
+button,
+.btn-gold {
+  background: #d4af37;
+  color: #000;
+  font-size: 18px;
+  padding: 14px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+button:hover,
+.btn-gold:hover {
+  background: #ffd700;
+  transform: scale(1.03);
+}
+
+/* Botões links estilizados */
+.btn-link {
+  background: none;
+  color: #d4af37;
+  font-size: 16px;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+.btn-link:hover {
   text-decoration: underline;
 }
 
-/* Suporte a leitores de tela */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+/* ===== Loader ===== */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #d4af37;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== Tabelas (para Meus Plantões e Admin) ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th, table td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: center;
+}
+
+table th {
+  background-color: #222;
+  color: #d4af37;
+}
+
+table tr:nth-child(even) {
+  background-color: #111;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 600px) {
+  .linha-dupla {
+    flex-direction: column;
+  }
 }

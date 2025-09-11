@@ -1,8 +1,8 @@
-// registrar.js - Atualizado com validações robustas, feedback melhorado e loader
+// registrar.js - Final com Evolução e Sobreaviso
 import { auth, db } from './firebase.js';
 import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { validarCPF, buscarNomeMedico, gerarHoras } from './utils.js';
+import { buscarDadosMedico, calcularHorasTrabalhadas } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   onAuthStateChanged(auth, (user) => {
@@ -11,55 +11,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('plantaoForm');
     const loader = document.getElementById('loader');
 
+    let medicoCache = null;
+
+    async function configurarFormulario() {
+      medicoCache = await buscarDadosMedico(uid);
+
+      // Mostrar checkbox de acordo com a especialidade
+      if (medicoCache.especialidade === "CLINICO" || medicoCache.especialidade === "ESPECIALISTA") {
+        document.getElementById('evolucaoContainer').style.display = "block";
+      }
+
+      if (medicoCache.especialidade === "ANESTESISTA") {
+        document.getElementById('sobreavisoContainer').style.display = "block";
+      }
+    }
+
+    configurarFormulario();
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loader.style.display = 'block'; // Mostra loader
+      loader.style.display = 'block';
 
       const dataSelecionada = document.getElementById('data').value;
       const horaInicio = document.getElementById('horaInicio').value;
       const horaFim = document.getElementById('horaFim').value;
-
-      // Validações aprimoradas
-      if (!dataSelecionada.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        Toastify({ text: 'Data inválida. Use o formato AAAA-MM-DD.', backgroundColor: 'red' }).showToast();
-        loader.style.display = 'none';
-        return;
-      }
-      if (!horaInicio || !horaFim || horaInicio >= horaFim) {
-        Toastify({ text: 'Horários inválidos. Início deve ser antes do fim.', backgroundColor: 'red' }).showToast();
-        loader.style.display = 'none';
-        return;
-      }
+      const checkEvolucao = document.getElementById('checkEvolucao')?.checked;
+      const checkSobreaviso = document.getElementById('checkSobreaviso')?.checked;
 
       const hospitalSelecionado = document.querySelector('input[name="hospital"]:checked');
       if (!hospitalSelecionado) {
-        Toastify({ text: 'Selecione o hospital.', backgroundColor: 'red' }).showToast();
+        Toastify({ text: 'Selecione o hospital.', style: { background: 'red' } }).showToast();
         loader.style.display = 'none';
         return;
       }
 
       try {
-        const nomeMedico = await buscarNomeMedico(uid);
-        await addDoc(collection(db, 'plantoes'), {
+        let dadosPlantao = {
           uid,
-          medico: nomeMedico,
+          medico: medicoCache.nome,
+          especialidade: medicoCache.especialidade || "NÃO INFORMADA",
           data: dataSelecionada,
-          horaInicio,
-          horaFim,
           hospital: hospitalSelecionado.value
-        });
-        Toastify({ text: 'Plantão registrado com sucesso! ✅', backgroundColor: 'green' }).showToast();
+        };
+
+        if (checkEvolucao) {
+          dadosPlantao.tipo = "EVOLUCAO";
+          dadosPlantao.horas = 0;
+        } else if (checkSobreaviso) {
+          dadosPlantao.tipo = "SOBREAVISO";
+          dadosPlantao.horas = 0;
+        } else {
+          const horas = calcularHorasTrabalhadas(horaInicio, horaFim);
+          if (horas <= 0) {
+            Toastify({ text: 'Horas inválidas.', style: { background: 'red' } }).showToast();
+            loader.style.display = 'none';
+            return;
+          }
+          dadosPlantao.horaInicio = horaInicio;
+          dadosPlantao.horaFim = horaFim;
+          dadosPlantao.horas = horas;
+          dadosPlantao.tipo = "PLANTAO";
+        }
+
+        await addDoc(collection(db, 'plantoes'), dadosPlantao);
+
+        Toastify({ text: 'Plantão registrado com sucesso! ✅', style: { background: 'green' } }).showToast();
         form.reset();
       } catch (error) {
         console.error('Erro ao salvar plantão:', error);
-        Toastify({ text: 'Erro ao salvar. Tente novamente.', backgroundColor: 'red' }).showToast();
+        Toastify({ text: 'Erro ao salvar. Tente novamente.', style: { background: 'red' } }).showToast();
       } finally {
-        loader.style.display = 'none'; // Esconde loader
+        loader.style.display = 'none';
       }
     });
   });
-
-  // Gera horas ao carregar
-  gerarHoras('horaInicio');
-  gerarHoras('horaFim');
 });

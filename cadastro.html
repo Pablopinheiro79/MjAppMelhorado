@@ -27,6 +27,21 @@
           <div class="sr-only" id="cpf-error">Campo obrigatório</div>
         </div>
         <div class="mb-3">
+          <label class="form-label">Especialidade:</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="especialidade" id="clinico" value="CLINICO" required>
+            <label class="form-check-label" for="clinico">Clínico Geral</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="especialidade" id="anestesista" value="ANESTESISTA">
+            <label class="form-check-label" for="anestesista">Anestesista</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="especialidade" id="especialista" value="ESPECIALISTA">
+            <label class="form-check-label" for="especialista">UTI / Especialista</label>
+          </div>
+        </div>
+        <div class="mb-3">
           <label for="senha" class="form-label">Senha:</label>
           <input class="form-control" id="senha" placeholder="Crie uma senha forte" required type="password" />
         </div>

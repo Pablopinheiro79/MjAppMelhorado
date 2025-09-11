@@ -1,64 +1,68 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registrar Plantão - MJ App</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-  <!-- CDN para Toastify e Cleave -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="authGuard.js"></script>
+  <script type="module" src="registrar.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
 </head>
 <body>
-  <div class="container d-flex flex-column align-items-center justify-content-center min-vh-100" role="main">
-    <img alt="Logo da empresa MJ, representando serviços médicos" class="logo-mj" src="LOGO MJ.jpeg" />
-    <h3 class="text-center gold mb-4 mt-3">REGISTRAR PLANTÃO</h3>
-    <div class="w-100" style="max-width: 400px;">
-      <form id="plantaoForm" role="form">
-        <div class="mb-3">
-          <label class="form-label" for="data">Data:</label>
-          <input aria-describedby="data-error" class="form-control" id="data" required type="date" />
-          <div class="sr-only" id="data-error">Campo obrigatório</div>
+  <div class="container centralizado">
+    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo-mj">
+
+    <h2 class="gold">Registrar Plantão</h2>
+
+    <form id="plantaoForm" class="form-card">
+      <!-- Data -->
+      <div class="campo">
+        <label for="data">Data do Plantão:</label>
+        <input type="date" id="data" required>
+      </div>
+
+      <!-- Horário -->
+      <div class="linha-dupla" id="horariosContainer">
+        <div class="campo">
+          <label for="horaInicio">Hora de Início:</label>
+          <input type="time" id="horaInicio">
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="horaInicio">Hora de início:</label>
-          <select aria-describedby="hora-error" class="form-control" id="horaInicio" required></select>
+        <div class="campo">
+          <label for="horaFim">Hora de Término:</label>
+          <input type="time" id="horaFim">
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="horaFim">Hora de fim:</label>
-          <select aria-describedby="hora-error" class="form-control" id="horaFim" required></select>
-          <div class="sr-only" id="hora-error">Horário inválido</div>
+      </div>
+
+      <!-- Checkbox Evolução (Clínico/Especialista) -->
+      <div class="campo" id="evolucaoContainer" style="display:none;">
+        <label><input type="checkbox" id="checkEvolucao"> Registrar Evolução (R$ 540,00)</label>
+      </div>
+
+      <!-- Checkbox Sobreaviso (Anestesista) -->
+      <div class="campo" id="sobreavisoContainer" style="display:none;">
+        <label><input type="checkbox" id="checkSobreaviso"> Registrar Sobreaviso (R$ 800,00)</label>
+      </div>
+
+      <!-- Hospital -->
+      <div class="campo">
+        <label>Hospital:</label>
+        <div class="radio-group">
+          <label><input type="radio" name="hospital" value="Pedro I" required> Pedro I</label>
+          <label><input type="radio" name="hospital" value="Edgley"> Edgley</label>
+          <label><input type="radio" name="hospital" value="Unimed"> Unimed</label>
+          <label><input type="radio" name="hospital" value="ISEA"> ISEA</label>
+          <label><input type="radio" name="hospital" value="CEMAIS"> CEMAIS</label>
+          <label><input type="radio" name="hospital" value="HCA"> HCA</label>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Hospital:</label>
-          <br />
-          <div class="form-check">
-            <input class="form-check-input" id="pedroI" name="hospital" required type="radio" value="Pedro I" />
-            <label class="form-check-label" for="pedroI">Pedro I</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" id="edglay" name="hospital" type="radio" value="Edglay" />
-            <label class="form-check-label" for="edglay">Edglay</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" id="unimed" name="hospital" type="radio" value="Unimed" />
-            <label class="form-check-label" for="unimed">Unimed</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" id="isea" name="hospital" type="radio" value="ISEA" />
-            <label class="form-check-label" for="isea">ISEA</label>
-          </div>
-        </div>
-        <button aria-label="Salvar plantão" class="btn btn-gold w-100 mt-2" type="submit">SALVAR</button>
-        <a class="btn btn-outline-light w-100 mt-3" href="meus-plantoes.html">VER PLANTÕES CADASTRADOS</a>
-        <a class="gold text-decoration-none d-block mt-2" href="termos.html">Termos de Uso</a>
-      </form>
-    </div>
-    <div id="loader">Carregando...</div>
+      </div>
+
+      <!-- Botões -->
+      <button type="submit" class="btn-gold grande">Registrar</button>
+      <a href="meus-plantoes.html" class="btn-link">Ver Meus Plantões</a>
+    </form>
+
+    <div id="loader" class="loader" style="display:none"></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script type="module" src="registrar.js"></script>
 </body>
 </html>

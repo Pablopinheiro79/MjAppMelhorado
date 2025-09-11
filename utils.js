@@ -1,81 +1,116 @@
-// utils.js - Funções utilitárias compartilhadas para reduzir repetição e melhorar manutenibilidade
-import { getDoc, doc, getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'; // Atualizado para versão mais recente
+// utils.js
 
-const db = getFirestore();
-
-// Validação de CPF com algoritmo real (fonte: algoritmo brasileiro oficial)
-function validarCPF(cpf) {
-  cpf = cpf.replace(/\D/g, '');
-  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-  let soma = 0, resto;
-  for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i - 1]) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf[9])) return false;
-  soma = 0;
-  for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i - 1]) * (12 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  return resto === parseInt(cpf[10]);
-}
-
-// Converte CPF para e-mail (mantido para compatibilidade, mas considere usar e-mails reais)
-function cpfParaEmail(cpf) {
-  return cpf.replace(/\D/g, '') + '@mjapp.com';
-}
-
-// Formata data para dd/mm/aaaa
-function formatarData(dataStr) {
-  const [ano, mes, dia] = dataStr.split('-');
+// ----------------------
+// Formatar data YYYY-MM-DD -> DD/MM/YYYY
+// ----------------------
+export function formatarData(dataStr) {
+  if (!dataStr) return "";
+  const [ano, mes, dia] = dataStr.split("-");
   return `${dia}/${mes}/${ano}`;
 }
 
-// Calcula horas trabalhadas com validação
-function calcularHorasTrabalhadas(inicio, fim) {
-  if (!inicio || !fim || !/^\d{2}:\d{2}$/.test(inicio) || !/^\d{2}:\d{2}$/.test(fim)) return 0;
-  const [h1, m1] = inicio.split(':').map(Number);
-  const [h2, m2] = fim.split(':').map(Number);
+// ----------------------
+// Calcular horas trabalhadas entre início e fim
+// ----------------------
+export function calcularHorasTrabalhadas(inicio, fim) {
+  if (!inicio || !fim) return 0;
+  const [h1, m1] = inicio.split(":").map(Number);
+  const [h2, m2] = fim.split(":").map(Number);
+
   let start = h1 * 60 + m1;
   let end = h2 * 60 + m2;
-  if (end < start) end += 24 * 60;
+  if (end < start) end += 24 * 60; // passou da meia-noite
+
   return Math.round((end - start) / 60);
 }
 
-// Gera opções de horas para selects (00:00 a 23:30)
-function gerarHoras(selectId) {
-  const select = document.getElementById(selectId);
-  select.innerHTML = '<option value="">Selecione</option>';
-  for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
-      const hora = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-      const option = document.createElement('option');
-      option.value = hora;
-      option.textContent = hora;
-      select.appendChild(option);
+// ----------------------
+// Calcular valor do plantão
+// ----------------------
+export function calcularValorPlantao(
+  horas,
+  hospital,
+  data,
+  tipo = "PLANTAO",
+  especialidade = "CLINICO",
+  horaInicio = null
+) {
+  if (!data || !hospital) return 0;
+
+  // ⚠️ Unimed ainda sem regra definida
+  if (hospital.toUpperCase() === "UNIMED") {
+    return 0;
+  }
+
+  // 📌 Casos especiais fixos
+  if (tipo === "EVOLUCAO") {
+    return 540;
+  }
+  if (tipo === "SOBREAVISO") {
+    return 800;
+  }
+
+  const dataObj = new Date(data + "T00:00:00");
+  const diaSemana = dataObj.getDay(); // 0 = Domingo ... 6 = Sábado
+  const mmdd = data.substring(5); // "MM-DD"
+
+  // 📌 Feriados normais
+  const feriadosNormais = [
+    "04-21", "05-01", "06-24", "07-26",
+    "08-05", "09-07", "10-11", "10-12",
+    "11-02", "11-15", "12-25"
+  ];
+  const ehFeriadoNormal = feriadosNormais.includes(mmdd);
+
+  // 📌 Feriados especiais
+  const eh2412 = mmdd === "12-24";
+  const eh3112 = mmdd === "12-31";
+  const eh2501 = mmdd === "12-25" || mmdd === "01-01";
+
+  // 📌 Tabelas base (12h)
+  const tabelaSemana12h = {
+    CLINICO: 1080,
+    ESPECIALISTA: 1300,
+    ANESTESISTA: 1800
+  };
+
+  const tabelaFds12h = {
+    CLINICO: 1290,
+    ESPECIALISTA: 1500,
+    ANESTESISTA: 2000
+  };
+
+  // 📌 Define valor base
+  let valorBase = 0;
+  const ehFDSouFeriado = diaSemana === 0 || diaSemana === 6 || ehFeriadoNormal;
+
+  if (ehFDSouFeriado) {
+    valorBase = tabelaFds12h[especialidade] || 0;
+  } else {
+    valorBase = tabelaSemana12h[especialidade] || 0;
+  }
+
+  // 📌 Ajusta proporcionalidade para 6h
+  if (horas === 6) {
+    valorBase = valorBase / 2;
+  }
+
+  // ----------------------
+  // 📌 Regras de feriados especiais
+  // ----------------------
+  if (horaInicio) {
+    const [h] = horaInicio.split(":").map(Number);
+
+    // 24 e 31 Dez → dobra só se início >= 19h
+    if ((eh2412 || eh3112) && h >= 19) {
+      valorBase *= 2;
+    }
+
+    // 25 Dez e 01 Jan → dobra só se início < 19h (diurno)
+    if (eh2501 && h < 19) {
+      valorBase *= 2;
     }
   }
+
+  return valorBase;
 }
-
-// Busca nome do médico no Firestore
-async function buscarNomeMedico(uid) {
-  try {
-    const refMedico = doc(db, 'medicos', uid);
-    const snap = await getDoc(refMedico);
-    if (!snap.exists()) throw new Error('Nome do médico não encontrado');
-    return snap.data().nome;
-  } catch (error) {
-    console.error('Erro ao buscar médico:', error);
-    throw error;
-  }
-}
-
-// Validação de senha forte
-function validarSenha(senha) {
-  return /(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}/.test(senha); // Mín 8 chars, 1 maiúscula, 1 dígito, 1 especial
-}
-
-// Testes básicos (use Jest para executar): 
-// test('validarCPF', () => expect(validarCPF('12345678909')).toBe(true));
-// test('formatarData', () => expect(formatarData('2023-10-15')).toBe('15/10/2023'));
-
-export { validarCPF, cpfParaEmail, formatarData, calcularHorasTrabalhadas, gerarHoras, buscarNomeMedico, validarSenha };

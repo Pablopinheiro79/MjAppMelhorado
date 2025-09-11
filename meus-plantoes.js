@@ -1,10 +1,10 @@
-// meus-plantoes.js - Carrega e exibe os plantões do médico logado com filtros
+// meus-plantoes.js - atualizado sem coluna "horas"
 import { auth, db } from './firebase.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { formatarData, calcularHorasTrabalhadas } from './utils.js';
+import { formatarData, calcularValorPlantao } from './utils.js';
 
-let listaPlantões = [];
+let listaPlantoes = [];
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -16,9 +16,9 @@ onAuthStateChanged(auth, async (user) => {
   const uid = user.uid;
   try {
     const snapshot = await getDocs(query(collection(db, 'plantoes'), where('uid', '==', uid)));
-    listaPlantões = snapshot.docs.map(doc => doc.data());
+    listaPlantoes = snapshot.docs.map(doc => doc.data());
     popularFiltros();
-    renderizarTabela();
+    renderizarTabela(listaPlantoes);
     aplicarFiltros();
   } catch (error) {
     console.error('Erro ao carregar plantões:', error);
@@ -26,29 +26,33 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-function renderizarTabela() {
+function renderizarTabela(plantoes) {
   const tbody = document.querySelector('table tbody');
   tbody.innerHTML = '';
   let contagem = 0;
-  let totalHoras = 0;
+  let totalReceber = 0;
 
-  listaPlantões.forEach(p => {
-    if (!p.data || !p.horaInicio || !p.horaFim) return; // Pula entradas incompletas
-    const horas = calcularHorasTrabalhadas(p.horaInicio, p.horaFim);
+  plantoes.forEach(p => {
+    if (!p.data || !p.horas) return;
+
+    const valor = calcularValorPlantao(p.horas, p.hospital, p.data, "PLANTAO", p.especialidade);
+
     const linha = `
       <tr>
         <td>${formatarData(p.data)}</td>
-        <td>${p.horaInicio}</td>
-        <td>${p.horaFim}</td>
         <td>${p.hospital || '-'}</td>
-        <td>${horas}h</td>
+        <td>R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
       </tr>`;
     tbody.innerHTML += linha;
+
     contagem++;
-    totalHoras += horas;
+    totalReceber += valor;
   });
 
-  document.getElementById('contador').innerHTML = `<div><strong class="gold">${contagem} plantões encontrados (Total: ${totalHoras}h)</strong></div>`;
+  document.getElementById('contador').innerHTML = `
+    <div><strong class="gold">${contagem} plantões encontrados</strong></div>
+    <div><strong class="gold">Valor a receber: R$ ${totalReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></div>
+  `;
 }
 
 function aplicarFiltros() {
@@ -56,7 +60,7 @@ function aplicarFiltros() {
   const selHospital = document.getElementById('filtroHospital');
 
   function filtrar() {
-    let listaFiltrada = [...listaPlantões];
+    let listaFiltrada = [...listaPlantoes];
 
     if (selMes.value !== 'Todos') {
       const [mesNome, ano] = selMes.value.split(' ');
@@ -68,8 +72,7 @@ function aplicarFiltros() {
       listaFiltrada = listaFiltrada.filter(p => p.hospital === selHospital.value);
     }
 
-    listaPlantões = listaFiltrada; // Atualiza a lista global
-    renderizarTabela();
+    renderizarTabela(listaFiltrada);
   }
 
   selMes.addEventListener('change', filtrar);
@@ -80,7 +83,7 @@ function popularFiltros() {
   const selMes = document.getElementById('mesAno');
   const mesesSet = new Set();
 
-  listaPlantões.forEach(p => {
+  listaPlantoes.forEach(p => {
     if (p.data) {
       const [ano, mes] = p.data.split('-');
       const nomeMes = new Date(`${p.data}T00:00:00`).toLocaleString('pt-BR', { month: 'long' });
@@ -111,10 +114,10 @@ function capitalize(str) {
 function exportarCSV() {
   const linhas = [];
   const tabela = document.querySelector('table');
-  linhas.push(['Data', 'Hora Início', 'Hora Fim', 'Hospital', 'Horas Trabalhadas']); // Cabeçalho
+  linhas.push(['Data', 'Hospital', 'Valor']); // removida coluna "Horas"
 
   for (const row of tabela.rows) {
-    if (row.cells.length > 1) { // Pula o cabeçalho
+    if (row.cells.length > 1) {
       const cols = Array.from(row.cells).map(td => `"${td.innerText}"`);
       linhas.push(cols);
     }
@@ -125,11 +128,10 @@ function exportarCSV() {
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'meus_plantões.csv';
+  a.download = 'meus_plantoes.csv';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
 
-// Torna a função exportarCSV global para o onclick no HTML
 window.exportarCSV = exportarCSV;

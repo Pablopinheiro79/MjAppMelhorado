@@ -1,124 +1,138 @@
-// main.js - Atualizado com paginação, lazy loading e validações
+// main.js - Atualizado para usar campo "horas" direto do Firestore
 import { db } from './firebase.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { formatarData, calcularHorasTrabalhadas } from './utils.js';
+import { formatarData, calcularValorPlantao } from './utils.js';
 
-let dadosCompletos = [];
-let paginaAtual = 1;
-const itensPorPagina = 10;
+let listaPlantoes = [];
 
-async function carregarPlantões() {
+document.addEventListener('DOMContentLoaded', async () => {
   try {
     const snapshot = await getDocs(collection(db, 'plantoes'));
-    dadosCompletos = snapshot.docs.map(doc => doc.data());
-    popularFiltros(dadosCompletos);
-    renderizarTabela(dadosCompletos.slice(0, itensPorPagina));
-    aplicarFiltros(dadosCompletos);
-    atualizarPaginacao(dadosCompletos.length);
+    listaPlantoes = snapshot.docs.map(doc => doc.data());
+    popularFiltros();
+    renderizarTabela(listaPlantoes);
+    aplicarFiltros();
   } catch (error) {
     console.error('Erro ao carregar plantões:', error);
-    Toastify({ text: 'Erro ao carregar dados.', backgroundColor: 'red' }).showToast();
+    Toastify({ text: 'Erro ao carregar dados.', style: { background: 'red' } }).showToast();
   }
-}
+});
 
-function renderizarTabela(lista) {
+function renderizarTabela(plantoes) {
   const tbody = document.querySelector('table tbody');
   tbody.innerHTML = '';
 
-  let contagem = {};
-  let horasTotais = {};
+  const totaisPorMedico = {};
 
-  lista.forEach(p => {
-    if (!p.medico || !p.data || !p.horaInicio || !p.horaFim) return;
-    const linha = `<tr><td>${formatarData(p.data)}</td><td>${p.horaInicio}</td><td>${p.horaFim}</td><td>${p.medico}</td><td>${p.hospital}</td></tr>`;
+  plantoes.forEach(p => {
+    if (!p.data || !p.horas) return;
+
+    const valor = calcularValorPlantao(p.horas, p.hospital, p.data, "PLANTAO", p.especialidade);
+
+    const linha = `
+      <tr>
+        <td>${p.medico || '-'}</td>
+        <td>${p.especialidade || '-'}</td>
+        <td>${formatarData(p.data)}</td>
+        <td>${p.hospital || '-'}</td>
+        <td>${p.horas}h</td>
+        <td>R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+      </tr>`;
     tbody.innerHTML += linha;
-    contagem[p.medico] = (contagem[p.medico] || 0) + 1;
-    const horas = calcularHorasTrabalhadas(p.horaInicio, p.horaFim);
-    horasTotais[p.medico] = (horasTotais[p.medico] || 0) + horas;
+
+    // Acumula por médico
+    if (!totaisPorMedico[p.medico]) {
+      totaisPorMedico[p.medico] = { horas: 0, valor: 0, qtd: 0 };
+    }
+    totaisPorMedico[p.medico].horas += p.horas;
+    totaisPorMedico[p.medico].valor += valor;
+    totaisPorMedico[p.medico].qtd++;
   });
 
-  const contagemDiv = document.querySelector('.mb-4.text-end');
-  contagemDiv.innerHTML = Object.keys(contagem).map(nome => `<div><strong class="gold">${nome}: ${contagem[nome]} plantões (Total: ${horasTotais[nome]}h)</strong></div>`).join('');
+  // Resumo por médico
+  const resumo = document.getElementById('resumoMedicos');
+  if (resumo) {
+    resumo.innerHTML = '<h5 class="gold mt-3">Resumo por Médico</h5><ul>';
+    Object.keys(totaisPorMedico).forEach(medico => {
+      const { horas, valor, qtd } = totaisPorMedico[medico];
+      resumo.innerHTML += `
+        <li>
+          <strong>${medico}</strong> 
+          (${qtd} plantões, ${horas}h) → 
+          <span class="gold">R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+        </li>
+      `;
+    });
+    resumo.innerHTML += '</ul>';
+  }
 }
 
-function aplicarFiltros(dados) {
-  const selMes = document.querySelector('select:nth-of-type(1)');
-  const selMedico = document.querySelector('select:nth-of-type(2)');
-  const selHospital = document.querySelector('select:nth-of-type(3)');
+function aplicarFiltros() {
+  const selMes = document.getElementById('mesAno');
+  const selHospital = document.getElementById('filtroHospital');
 
   function filtrar() {
-    let lista = [...dados];
+    let listaFiltrada = [...listaPlantoes];
+
     if (selMes.value !== 'Todos') {
       const [mesNome, ano] = selMes.value.split(' ');
-      const mes = new Date(`${mesNome} 1, ${ano}`).getMonth() + 1;
-      lista = lista.filter(p => p.data.startsWith(`${ano}-${String(mes).padStart(2, '0')}`));
+      const mes = converterMesNomeParaNumero(mesNome);
+      listaFiltrada = listaFiltrada.filter(p => p.data?.startsWith(`${ano}-${mes}`));
     }
-    if (selMedico.value !== 'Todos') lista = lista.filter(p => p.medico === selMedico.value);
-    if (selHospital.value !== 'Todos') lista = lista.filter(p => p.hospital === selHospital.value);
 
-    paginaAtual = 1;
-    renderizarTabelaPaginada(lista);
-    atualizarPaginacao(lista.length);
+    if (selHospital.value !== 'Todos') {
+      listaFiltrada = listaFiltrada.filter(p => p.hospital === selHospital.value);
+    }
+
+    renderizarTabela(listaFiltrada);
   }
 
-  [selMes, selMedico, selHospital].forEach(sel => sel.addEventListener('change', filtrar));
+  selMes.addEventListener('change', filtrar);
+  selHospital.addEventListener('change', filtrar);
 }
 
-function renderizarTabelaPaginada(dadosFiltrados) {
-  const inicio = (paginaAtual - 1) * itensPorPagina;
-  const fim = inicio + itensPorPagina;
-  renderizarTabela(dadosFiltrados.slice(inicio, fim));
-}
+function popularFiltros() {
+  const selMes = document.getElementById('mesAno');
+  const mesesSet = new Set();
 
-function atualizarPaginacao(totalItens) {
-  const totalPaginas = Math.ceil(totalItens / itensPorPagina);
-  const paginacaoDiv = document.getElementById('paginacao');
-  paginacaoDiv.innerHTML = '';
-  for (let i = 1; i <= totalPaginas; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = i;
-    btn.className = 'btn btn-outline-light mx-1';
-    btn.onclick = () => {
-      paginaAtual = i;
-      renderizarTabelaPaginada(dadosFiltrados);
-    };
-    paginacaoDiv.appendChild(btn);
-  }
-}
-
-function popularFiltros(dados) {
-  const meses = new Set();
-  const medicos = new Set();
-  const hospitais = new Set();
-
-  dados.forEach(p => {
+  listaPlantoes.forEach(p => {
     if (p.data) {
       const [ano, mes] = p.data.split('-');
-      meses.add(`${converterNumeroParaMes(mes)} ${ano}`);
+      const nomeMes = new Date(`${p.data}T00:00:00`).toLocaleString('pt-BR', { month: 'long' });
+      mesesSet.add(`${capitalize(nomeMes)} ${ano}`);
     }
-    if (p.medico) medicos.add(p.medico);
-    if (p.hospital) hospitais.add(p.hospital);
   });
 
-  preencherSelect(document.querySelector('select:nth-of-type(1)'), meses, 'Mês');
-  preencherSelect(document.querySelector('select:nth-of-type(2)'), medicos, 'Médico');
-  preencherSelect(document.querySelector('select:nth-of-type(3)'), hospitais, 'Hospital');
+  selMes.innerHTML = '<option value="Todos">Todos</option>';
+  Array.from(mesesSet).sort().forEach(m => {
+    selMes.innerHTML += `<option value="${m}">${m}</option>`;
+  });
 }
 
-function preencherSelect(select, itens, label) {
-  select.innerHTML = `<option>Todos</option>`;
-  [...itens].sort().forEach(item => {
-    select.innerHTML += `<option>${item}</option>`;
-  });
+function converterMesNomeParaNumero(nome) {
+  const meses = {
+    'Janeiro': '01', 'Fevereiro': '02', 'Março': '03',
+    'Abril': '04', 'Maio': '05', 'Junho': '06',
+    'Julho': '07', 'Agosto': '08', 'Setembro': '09',
+    'Outubro': '10', 'Novembro': '11', 'Dezembro': '12'
+  };
+  return meses[nome] || '01';
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function exportarCSV() {
   const linhas = [];
   const tabela = document.querySelector('table');
+  linhas.push(['Médico', 'Especialidade', 'Data', 'Hospital', 'Horas', 'Valor']); 
 
   for (const row of tabela.rows) {
-    const cols = Array.from(row.cells).map(td => `"${td.innerText}"`);
-    linhas.push(cols.join(','));
+    if (row.cells.length > 1) {
+      const cols = Array.from(row.cells).map(td => `"${td.innerText}"`);
+      linhas.push(cols);
+    }
   }
 
   const blob = new Blob([linhas.join('\n')], { type: 'text/csv' });
@@ -126,11 +140,10 @@ function exportarCSV() {
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'plantoes_mj.csv';
+  a.download = 'plantões_admin.csv';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
 }
 
-document.querySelector('.btn-gold').addEventListener('click', exportarCSV);
-carregarPlantões();
+window.exportarCSV = exportarCSV;

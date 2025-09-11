@@ -1,4 +1,4 @@
-// cadastro.js - Atualizado com validações, máscara e confirmação de senha
+// cadastro.js - Atualizado com especialidade, validações e confirmação de senha
 import { auth, db } from './firebase.js';
 import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cpf = document.getElementById('cpf').value.trim();
     const senha = document.getElementById('senha').value;
     const confirmaSenha = document.getElementById('confirmaSenha').value;
+    const especialidade = document.querySelector('input[name="especialidade"]:checked')?.value;
 
-    if (!nome || !cpf || !senha || !confirmaSenha) {
-      Toastify({ text: 'Preencha todos os campos.', backgroundColor: 'red' }).showToast();
+    // Validações
+    if (!nome || !cpf || !senha || !confirmaSenha || !especialidade) {
+      Toastify({ text: 'Preencha todos os campos e selecione a especialidade.', backgroundColor: 'red' }).showToast();
       loader.style.display = 'none';
       return;
     }
@@ -49,7 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = cpfParaEmail(cpf);
       const credenciais = await createUserWithEmailAndPassword(auth, email, senha);
       const uid = credenciais.user.uid;
-      await setDoc(doc(db, 'medicos', uid), { nome, cpf });
+
+      // Salva dados no Firestore incluindo especialidade
+      await setDoc(doc(db, 'medicos', uid), { 
+        nome, 
+        cpf, 
+        especialidade 
+      });
+
       Toastify({ text: 'Cadastro realizado com sucesso!', backgroundColor: 'green' }).showToast();
       window.location.href = 'index.html';
     } catch (error) {
