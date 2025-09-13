@@ -5,64 +5,149 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registrar Plantão - MJ App</title>
   <link rel="stylesheet" href="styles.css">
-  <script type="module" src="authGuard.js"></script>
-  <script type="module" src="registrar.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body>
-  <div class="container centralizado">
-    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo-mj">
+  <div class="container">
+    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo">
 
-    <h2 class="gold">Registrar Plantão</h2>
+    <h2>Registrar Plantão</h2>
 
-    <form id="plantaoForm" class="form-card">
+    <form id="registrarForm">
       <!-- Data -->
-      <div class="campo">
-        <label for="data">Data do Plantão:</label>
-        <input type="date" id="data" required>
-      </div>
-
-      <!-- Horário -->
-      <div class="linha-dupla" id="horariosContainer">
-        <div class="campo">
-          <label for="horaInicio">Hora de Início:</label>
-          <input type="time" id="horaInicio">
-        </div>
-        <div class="campo">
-          <label for="horaFim">Hora de Término:</label>
-          <input type="time" id="horaFim">
-        </div>
-      </div>
-
-      <!-- Checkbox Evolução (Clínico/Especialista) -->
-      <div class="campo" id="evolucaoContainer" style="display:none;">
-        <label><input type="checkbox" id="checkEvolucao"> Registrar Evolução (R$ 540,00)</label>
-      </div>
-
-      <!-- Checkbox Sobreaviso (Anestesista) -->
-      <div class="campo" id="sobreavisoContainer" style="display:none;">
-        <label><input type="checkbox" id="checkSobreaviso"> Registrar Sobreaviso (R$ 800,00)</label>
-      </div>
+      <label for="data">Data do plantão:</label>
+      <input type="date" id="data" required>
 
       <!-- Hospital -->
-      <div class="campo">
-        <label>Hospital:</label>
-        <div class="radio-group">
-          <label><input type="radio" name="hospital" value="Pedro I" required> Pedro I</label>
-          <label><input type="radio" name="hospital" value="Edgley"> Edgley</label>
-          <label><input type="radio" name="hospital" value="Unimed"> Unimed</label>
-          <label><input type="radio" name="hospital" value="ISEA"> ISEA</label>
-          <label><input type="radio" name="hospital" value="CEMAIS"> CEMAIS</label>
-          <label><input type="radio" name="hospital" value="HCA"> HCA</label>
-        </div>
-      </div>
+      <label for="hospital">Selecione o hospital:</label>
+      <select id="hospital" required>
+        <option value="">-- Selecione --</option>
+        <option value="Pedro I">Pedro I</option>
+        <option value="Edgley">Edgley</option>
+        <option value="Unimed">Unimed</option>
+        <option value="ISEA">ISEA</option>
+        <option value="CEMAIS">CEMAIS</option>
+        <option value="HCA">HCA</option>
+      </select>
+
+      <!-- Hora de início -->
+      <label for="horaInicio">Hora de Início:</label>
+      <select id="horaInicio" required>
+        <option value="">-- Selecione --</option>
+        <!-- opções geradas manualmente -->
+        <option value="00:00">00:00</option>
+        <option value="00:30">00:30</option>
+        <option value="01:00">01:00</option>
+        <option value="01:30">01:30</option>
+        <option value="02:00">02:00</option>
+        <option value="02:30">02:30</option>
+        <option value="03:00">03:00</option>
+        <option value="03:30">03:30</option>
+        <option value="04:00">04:00</option>
+        <option value="04:30">04:30</option>
+        <option value="05:00">05:00</option>
+        <option value="05:30">05:30</option>
+        <option value="06:00">06:00</option>
+        <option value="06:30">06:30</option>
+        <option value="07:00">07:00</option>
+        <option value="07:30">07:30</option>
+        <option value="08:00">08:00</option>
+        <option value="08:30">08:30</option>
+        <option value="09:00">09:00</option>
+        <option value="09:30">09:30</option>
+        <option value="10:00">10:00</option>
+        <option value="10:30">10:30</option>
+        <option value="11:00">11:00</option>
+        <option value="11:30">11:30</option>
+        <option value="12:00">12:00</option>
+        <option value="12:30">12:30</option>
+        <option value="13:00">13:00</option>
+        <option value="13:30">13:30</option>
+        <option value="14:00">14:00</option>
+        <option value="14:30">14:30</option>
+        <option value="15:00">15:00</option>
+        <option value="15:30">15:30</option>
+        <option value="16:00">16:00</option>
+        <option value="16:30">16:30</option>
+        <option value="17:00">17:00</option>
+        <option value="17:30">17:30</option>
+        <option value="18:00">18:00</option>
+        <option value="18:30">18:30</option>
+        <option value="19:00">19:00</option>
+        <option value="19:30">19:30</option>
+        <option value="20:00">20:00</option>
+        <option value="20:30">20:30</option>
+        <option value="21:00">21:00</option>
+        <option value="21:30">21:30</option>
+        <option value="22:00">22:00</option>
+        <option value="22:30">22:30</option>
+        <option value="23:00">23:00</option>
+        <option value="23:30">23:30</option>
+      </select>
+
+      <!-- Hora de término -->
+      <label for="horaFim">Hora de Término:</label>
+      <select id="horaFim" required>
+        <option value="">-- Selecione --</option>
+        <option value="00:00">00:00</option>
+        <option value="00:30">00:30</option>
+        <option value="01:00">01:00</option>
+        <option value="01:30">01:30</option>
+        <option value="02:00">02:00</option>
+        <option value="02:30">02:30</option>
+        <option value="03:00">03:00</option>
+        <option value="03:30">03:30</option>
+        <option value="04:00">04:00</option>
+        <option value="04:30">04:30</option>
+        <option value="05:00">05:00</option>
+        <option value="05:30">05:30</option>
+        <option value="06:00">06:00</option>
+        <option value="06:30">06:30</option>
+        <option value="07:00">07:00</option>
+        <option value="07:30">07:30</option>
+        <option value="08:00">08:00</option>
+        <option value="08:30">08:30</option>
+        <option value="09:00">09:00</option>
+        <option value="09:30">09:30</option>
+        <option value="10:00">10:00</option>
+        <option value="10:30">10:30</option>
+        <option value="11:00">11:00</option>
+        <option value="11:30">11:30</option>
+        <option value="12:00">12:00</option>
+        <option value="12:30">12:30</option>
+        <option value="13:00">13:00</option>
+        <option value="13:30">13:30</option>
+        <option value="14:00">14:00</option>
+        <option value="14:30">14:30</option>
+        <option value="15:00">15:00</option>
+        <option value="15:30">15:30</option>
+        <option value="16:00">16:00</option>
+        <option value="16:30">16:30</option>
+        <option value="17:00">17:00</option>
+        <option value="17:30">17:30</option>
+        <option value="18:00">18:00</option>
+        <option value="18:30">18:30</option>
+        <option value="19:00">19:00</option>
+        <option value="19:30">19:30</option>
+        <option value="20:00">20:00</option>
+        <option value="20:30">20:30</option>
+        <option value="21:00">21:00</option>
+        <option value="21:30">21:30</option>
+        <option value="22:00">22:00</option>
+        <option value="22:30">22:30</option>
+        <option value="23:00">23:00</option>
+        <option value="23:30">23:30</option>
+      </select>
 
       <!-- Botões -->
-      <button type="submit" class="btn-gold grande">Registrar</button>
-      <a href="meus-plantoes.html" class="btn-link">Ver Meus Plantões</a>
+      <button type="submit" class="btn">Registrar</button>
+      <a href="meus-plantoes.html" class="btn-outline">Voltar</a>
     </form>
-
-    <div id="loader" class="loader" style="display:none"></div>
   </div>
+
+  <script type="module" src="registrar.js"></script>
 </body>
 </html>
+
+
+
+

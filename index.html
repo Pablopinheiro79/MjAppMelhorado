@@ -3,37 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MJ App - Login</title>
+  <title>Login - MJ App</title>
   <link rel="stylesheet" href="styles.css">
-  <script type="module" src="auth.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body>
-  <div class="container centralizado">
-    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo-mj">
+  <div class="container">
+    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo">
+    <h2>Bem-vindo ao MJ App</h2>
 
-    <h2 class="gold">Acesso ao Sistema</h2>
+    <form id="loginForm">
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" placeholder="Somente números" required>
 
-    <form id="loginForm" class="form-card">
-      <div class="campo">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" required>
-      </div>
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" placeholder="Digite sua senha" required>
 
-      <div class="campo">
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" required>
-      </div>
-
-      <button type="submit" class="btn-gold grande">Entrar</button>
+      <button type="submit" class="btn">Entrar</button>
     </form>
 
-    <!-- Rodapé com links -->
-    <div class="form-card" style="margin-top: 15px; text-align: center;">
-      <a href="cadastro.html" class="btn-link">Criar conta</a>
-      <a href="recuperar.html" class="btn-link">Esqueci minha senha</a>
-      <a href="termos.html" class="btn-link">Termos de Uso</a>
-    </div>
+    <a href="cadastro.html" class="btn-outline">Criar conta</a>
+    <a href="termos.html" class="btn-outline">Termos de Uso</a>
   </div>
+
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
+
+

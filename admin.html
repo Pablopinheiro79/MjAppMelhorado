@@ -3,36 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - MJ App</title>
+  <title>Painel Admin - MJ App</title>
   <link rel="stylesheet" href="styles.css">
-  <script type="module" src="authGuard.js"></script>
-  <script type="module" src="admin.js" defer></script>
+
+  <!-- Toastify -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
 <body>
-  <div class="container centralizado">
-    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo-mj">
-    <h2 class="gold">Painel Administrativo</h2>
+  <div class="container">
+    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo">
 
-    <div class="form-card">
-      <table id="tabelaPlantoes">
-        <thead>
-          <tr>
-            <th>Médico</th>
-            <th>Especialidade</th>
-            <th>Data</th>
-            <th>Hospital</th>
-            <th>Tipo</th>
-            <th>Horas</th>
-            <th>Valor (R$)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Registros carregados via JS -->
-        </tbody>
-      </table>
+    <h2>Painel Administrativo</h2>
+
+    <!-- Filtros -->
+  <div class="filters">
+  <label for="filtroMedico">Médico:</label>
+  <select id="filtroMedico">
+    <option value="Todos">Todos</option>
+    <!-- médicos virão do Firestore -->
+  </select>
+
+  <label for="filtroHospital">Hospital:</label>
+  <select id="filtroHospital">
+    <option value="Todos">Todos</option>
+    <option value="Pedro I">Pedro I</option>
+    <option value="Edgley">Edgley</option>
+    <option value="Unimed">Unimed</option>
+    <option value="ISEA">ISEA</option>
+    <option value="CEMAIS">CEMAIS</option>
+    <option value="HCA">HCA</option>
+  </select>
+
+    <label for="filtroMes">Filtro por mês:</label>
+  <select id="filtroMes">
+    <option value="Todos">Todos</option>
+    <option value="01">Janeiro</option>
+    <option value="02">Fevereiro</option>
+    <option value="03">Março</option>
+    <option value="04">Abril</option>
+    <option value="05">Maio</option>
+    <option value="06">Junho</option>
+    <option value="07">Julho</option>
+    <option value="08">Agosto</option>
+    <option value="09">Setembro</option>
+    <option value="10">Outubro</option>
+    <option value="11">Novembro</option>
+    <option value="12">Dezembro</option>
+  </select>
+
+    <!-- Tabela -->
+    <table id="tabelaAdmin">
+      <thead>
+        <tr>
+          <th>Médico</th>
+          <th>Data</th>
+          <th>Hospital</th>
+          <th>Carga Horária</th>
+          <th>Valor</th>
+        </tr>
+      </thead>
+      <tbody id="listaAdmin">
+        <!-- preenchido pelo JS -->
+      </tbody>
+    </table>
+
+    <!-- Totais -->
+    <div id="resumoAdmin" class="resumo"></div>
+
+    <!-- Botões -->
+    <div class="button-group">
+      <button id="exportarCSVAdmin" class="btn">Exportar CSV</button>
+      <a href="index.html" class="btn-outline">Sair</a>
     </div>
-
-    <a href="index.html" class="btn-gold grande" style="margin-top:20px;">Sair</a>
   </div>
+
+  <script type="module" src="admin.js"></script>
 </body>
 </html>

@@ -1,7 +1,10 @@
-// auth.js - Atualizado com máscara, feedback e "lembrar-me"
+// auth.js
 import { auth } from './firebase.js';
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { validarCPF, cpfParaEmail } from './utils.js';
+
+// ✅ Importando Cleave.js via ES6 (corrige erro "Cleave is not defined")
+import Cleave from "https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave-esm.min.js";
 
 document.addEventListener('DOMContentLoaded', () => {
   // Máscara para CPF
@@ -16,30 +19,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    loader.style.display = 'block';
 
     const cpf = document.getElementById('cpf').value;
     const senha = document.getElementById('senha').value;
-    const lembrar = document.getElementById('lembrar').checked;
 
-    if (!cpf || !senha) {
-      Toastify({ text: 'Preencha CPF e senha.', backgroundColor: 'red' }).showToast();
-      loader.style.display = 'none';
-      return;
-    }
     if (!validarCPF(cpf)) {
-      Toastify({ text: 'CPF inválido.', backgroundColor: 'red' }).showToast();
-      loader.style.display = 'none';
+      alert('CPF inválido!');
       return;
     }
 
     try {
+      loader.style.display = 'block';
+
       const email = cpfParaEmail(cpf);
       await signInWithEmailAndPassword(auth, email, senha);
-      if (lembrar) localStorage.setItem('lembrar', 'true');
+
       window.location.href = 'registrar.html';
     } catch (error) {
-      Toastify({ text: 'CPF ou senha incorretos.', backgroundColor: 'red' }).showToast();
+      console.error('Erro no login:', error);
+      alert('Erro no login: ' + error.message);
     } finally {
       loader.style.display = 'none';
     }

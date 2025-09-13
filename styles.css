@@ -1,187 +1,188 @@
-/* ===== Reset básico ===== */
-* {
+/* ==========================
+   ESTILOS GERAIS
+========================== */
+body {
+  background-color: #000;
+  font-family: Arial, sans-serif;
+  color: #fff; /* 🔹 Texto branco */
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #000;
+  border: 2px solid #FFD700; /* 🔹 Dourado */
+  border-radius: 10px;
+  box-shadow: 0 0 15px #FFD700;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.logo {
+  width: 120px;
+  margin: 10px auto;
+  display: block;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #FFD700; /* 🔹 Destaque dourado */
+}
+
+/* ==========================
+   FORMULÁRIOS
+========================== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: #fff; /* 🔹 Branco */
+}
+
+input, select {
+  padding: 10px;
+  border: 1px solid #FFD700;
+  border-radius: 5px;
+  background: #111;
+  color: #fff; /* 🔹 Branco no texto */
+  font-size: 14px;
+  width: 100%;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background-color: #000;
-  color: #fff;
-  min-height: 100vh;
+input::placeholder {
+  color: #bbb; /* 🔹 Cinza claro no placeholder */
+}
+
+/* Checkbox alinhado */
+.checkbox-inline, .checkbox-grid {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
-}
-
-/* ===== Logo ===== */
-.logo-mj {
-  width: 100px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
-}
-
-/* ===== Títulos ===== */
-h2 {
-  margin-bottom: 20px;
-}
-
-.gold {
-  color: #d4af37;
-}
-
-/* ===== Container ===== */
-.container.centralizado {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  width: 100%;
+  gap: 8px;
+  margin: 10px 0;
+  color: #fff; /* 🔹 Texto branco */
 }
 
-/* ===== Card de formulário ===== */
-.form-card {
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-}
-
-/* ===== Campos ===== */
-.campo {
-  margin-bottom: 15px;
-  text-align: left;
-}
-
-.campo label {
-  display: block;
-  margin-bottom: 5px;
-  color: #d4af37;
-  font-weight: bold;
-}
-
-.campo input,
-.campo select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #444;
-  background: #111;
-  color: #fff;
-  font-size: 16px;
-}
-
-/* ===== Linha dupla (data + hora) ===== */
-.linha-dupla {
-  display: flex;
-  gap: 10px;
-}
-.linha-dupla .campo {
-  flex: 1;
-}
-
-/* ===== Radios em duas colunas ===== */
-.radio-group {
+.checkbox-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 8px 15px;
   text-align: left;
 }
 
-.radio-group label {
-  color: #fff;
-  font-size: 16px;
+.checkbox-inline input[type="checkbox"],
+.checkbox-grid input[type="checkbox"] {
+  accent-color: #FFD700; /* 🔹 Caixa dourada */
 }
 
-/* ===== Botões padronizados ===== */
-button,
-.btn-gold,
-.btn-link {
-  display: inline-block;
-  text-align: center;
+/* ==========================
+   BOTÕES
+========================== */
+button, .btn, .btn-outline {
+  padding: 12px;
+  margin-top: 12px;
+  width: 100%;
+  border-radius: 5px;
   font-weight: bold;
-  border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
-  border: none;
-}
-
-/* Botões principais dourados */
-button,
-.btn-gold {
-  background: #d4af37;
-  color: #000;
-  font-size: 18px;
-  padding: 14px;
-  width: 100%;
-  margin-top: 15px;
-}
-
-button:hover,
-.btn-gold:hover {
-  background: #ffd700;
-  transform: scale(1.03);
-}
-
-/* Botões links estilizados */
-.btn-link {
-  background: none;
-  color: #d4af37;
   font-size: 16px;
-  margin-top: 12px;
-  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.btn-link:hover {
-  text-decoration: underline;
+button, .btn {
+  background-color: #FFD700;
+  border: none;
+  color: #000; /* 🔹 Texto preto em botão dourado */
 }
 
-/* ===== Loader ===== */
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #d4af37;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
+button:hover, .btn:hover {
+  background-color: #e6c200;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid #FFD700;
+  color: #FFD700;
 }
 
-/* ===== Tabelas (para Meus Plantões e Admin) ===== */
+.btn-outline:hover {
+  background-color: #FFD700;
+  color: #000;
+}
+
+/* ==========================
+   TABELAS
+========================== */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-table th, table td {
-  border: 1px solid #444;
-  padding: 10px;
+th, td {
+  border: 1px solid #FFD700;
+  padding: 8px;
   text-align: center;
 }
 
-table th {
-  background-color: #222;
-  color: #d4af37;
+th {
+  background-color: #FFD700;
+  color: #000; /* 🔹 Preto no cabeçalho */
 }
 
-table tr:nth-child(even) {
+td {
   background-color: #111;
+  color: #fff; /* 🔹 Branco nas células */
 }
 
-/* ===== Responsividade ===== */
-@media (max-width: 600px) {
-  .linha-dupla {
-    flex-direction: column;
-  }
+/* ==========================
+   TEXTOS E LINKS
+========================== */
+.resumo {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+a {
+  color: #FFD700;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* espaço entre a caixinha e o texto */
+  margin: 10px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.checkbox-container label {
+  font-size: 14px;
+  color: #fff; /* branco para não ficar tudo amarelado */
+  cursor: pointer;
 }

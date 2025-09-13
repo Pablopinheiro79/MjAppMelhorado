@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: 'AIzaSyBJ2GYVsezyyrtMAbufHd8mg4ufsAK2mjw',
   authDomain: 'mj-app-fd7ac.firebaseapp.com',
   projectId: 'mj-app-fd7ac',
-  storageBucket: 'mj-app-fd7ac.firebasestorage.app',
+  storageBucket: 'mj-app-fd7ac.appspot.com',
   messagingSenderId: '492329302445',
   appId: '1:492329302445:web:afc2fd5a3f8e03d0bd8924'
 };
