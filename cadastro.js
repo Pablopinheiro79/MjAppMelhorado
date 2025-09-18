@@ -21,55 +21,99 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const nome = document.getElementById('nome').value;
-    const cpf = document.getElementById('cpf').value;
+    const nome = document.getElementById('nome').value.trim();
+    const cpf = document.getElementById('cpf').value.trim();
     const senha = document.getElementById('senha').value;
     const confirmarSenha = document.getElementById('confirmarSenha').value;
-    const especialidade = document.querySelector('input[name="especialidade"]:checked')?.value;
+    const especialidade = document.getElementById('especialidade').value;
 
     if (!validarCPF(cpf)) {
-      alert('CPF inválido!');
+      Swal.fire({
+        icon: 'error',
+        title: 'CPF inválido',
+        text: 'Por favor, insira um CPF válido.',
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      });
       return;
     }
 
     if (!especialidade) {
-      alert('Por favor, selecione sua especialidade.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Especialidade obrigatória',
+        text: 'Por favor, selecione sua especialidade.',
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      });
       return;
     }
 
     if (!validarSenha(senha)) {
-      alert('A senha deve ter pelo menos 6 caracteres.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Senha fraca',
+        text: 'A senha deve ter pelo menos 8 caracteres, com letras maiúsculas, minúsculas, números e símbolo.',
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      });
       return;
     }
 
     if (senha !== confirmarSenha) {
-      alert('As senhas não coincidem.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Senhas diferentes',
+        text: 'A senha e a confirmação devem ser iguais.',
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      });
       return;
     }
 
     try {
-      loader.style.display = 'block';
+      if (loader) loader.style.display = 'block';
 
       const email = cpfParaEmail(cpf);
 
       // Cria usuário no Firebase Auth
-      await createUserWithEmailAndPassword(auth, email, senha);
+      const userCred = await createUserWithEmailAndPassword(auth, email, senha);
 
-      // Salva dados no Firestore
-      await setDoc(doc(db, 'usuarios', cpf), {
+      // 🔹 Salva dados no Firestore com especialidade em MAIÚSCULO
+      await setDoc(doc(db, 'usuarios', userCred.user.uid), {
         nome,
         cpf,
-        especialidade,
+        especialidade: especialidade.toUpperCase(),
         criadoEm: new Date()
       });
 
-      alert('Cadastro realizado com sucesso!');
-      window.location.href = 'index.html';
+      Swal.fire({
+        icon: 'success',
+        title: 'Cadastro realizado!',
+        text: 'Agora você já pode acessar o MJ App.',
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      }).then(() => {
+        window.location.href = "index.html";
+      });
+
     } catch (error) {
-      console.error('Erro no cadastro:', error);
-      alert('Erro no cadastro: ' + error.message);
+      console.error("Erro no cadastro:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao cadastrar',
+        text: error.message,
+        confirmButtonColor: '#FFD700',
+        background: '#111',
+        color: '#fff'
+      });
     } finally {
-      loader.style.display = 'none';
+      if (loader) loader.style.display = 'none';
     }
   });
 });

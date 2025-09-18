@@ -1,12 +1,17 @@
 // utils.js
+import { db } from './firebase.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ============================
-// Função: Formatar data
+// Função: Formatar data (dd-mm-aaaa)
 // ============================
 export function formatarData(dataStr) {
   if (!dataStr) return "";
   const d = new Date(dataStr);
-  return d.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}-${mes}-${ano}`;
 }
 
 // ============================
@@ -95,7 +100,11 @@ const valores = {
     ANESTESISTA: { 12: 2000, 6: 1000 }
   },
   evolucao: 540,
-  sobreaviso: 800
+  sobreaviso: 800,
+  unimed: {
+    semana: { 12: 1500, 6: 750 },
+    fds: { 12: 1700, 6: 850 }
+  }
 };
 
 // ============================
@@ -103,6 +112,9 @@ const valores = {
 // ============================
 export function calcularValorPlantao(horas, hospital, data, tipo, especialidade, horaInicio = null) {
   if (!especialidade) return 0;
+
+  // 🔹 Normaliza especialidade para maiúsculo
+  especialidade = especialidade.toUpperCase();
 
   // Evolução
   if (tipo === "EVOLUCAO") {
@@ -119,15 +131,24 @@ export function calcularValorPlantao(horas, hospital, data, tipo, especialidade,
     return 0;
   }
 
-  let base = valores.semana;
+  // 🔹 Regras exclusivas para UNIMED
+  if (hospital === "Unimed") {
+    if (ehFimDeSemana(data) || ehFeriado(data)) {
+      return valores.unimed.fds[horas] || 0;
+    } else {
+      return valores.unimed.semana[horas] || 0;
+    }
+  }
 
+  // 🔹 Demais hospitais
+  let base = valores.semana;
   if (ehFimDeSemana(data) || ehFeriado(data)) {
     base = valores.fds;
   }
 
   let valor = base[especialidade]?.[horas] || 0;
 
-  // Feriados especiais
+  // 🔹 Feriados especiais (apenas hospitais que NÃO são Unimed)
   if (ehFeriadoEspecial(data)) {
     const d = new Date(data);
     const dia = d.getUTCDate();
@@ -196,4 +217,32 @@ export function validarSenha(senha) {
   // Pelo menos 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return regex.test(senha);
+}
+
+// ============================
+// Função: Buscar dados do médico no Firestore
+// ============================
+export async function buscarDadosMedico(uid) {
+  try {
+    // 🔹 Primeiro tenta buscar pelo UID
+    let ref = doc(db, "usuarios", uid);
+    let snap = await getDoc(ref);
+
+    // 🔹 Se não encontrar, tenta buscar pelo CPF (caso tenha sido salvo assim)
+    if (!snap.exists()) {
+      console.warn("Usuário não encontrado pelo UID, tentando CPF...");
+      ref = doc(db, "usuarios", uid.replace(/\D/g, "")); // remove pontos/hífens do CPF
+      snap = await getDoc(ref);
+    }
+
+    if (snap.exists()) {
+      return snap.data();
+    } else {
+      console.warn("Usuário não encontrado no Firestore.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar dados do médico:", error);
+    return null;
+  }
 }

@@ -1,5 +1,6 @@
 import { db, auth } from "./firebase.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { formatarData } from "./utils.js";
 
 let plantoes = [];
 
@@ -53,14 +54,20 @@ function renderizarTabela(lista) {
 
   lista.forEach(p => {
     const tr = document.createElement("tr");
+
+    // 📌 Caso seja evolução ou sobreaviso → não mostra horas
+    const cargaHoraria = (p.tipo === "EVOLUCAO" || p.tipo === "SOBREAVISO") ? "-" : (p.horas || "-");
+
     tr.innerHTML = `
-      <td>${p.data}</td>
-      <td>${p.hospital}</td>
-      <td>${p.cargaHoraria || "-"}</td>
-      <td>R$ ${p.valor.toFixed(2)}</td>
+      <td>${formatarData(p.data)}</td>
+      <td>${p.hospital || "-"}</td>
+      <td>${p.tipo}</td>
+      <td>${cargaHoraria}</td>
+      <td>R$ ${(p.valor || 0).toFixed(2)}</td>
     `;
+
     tbody.appendChild(tr);
-    total += p.valor;
+    total += p.valor || 0;
   });
 
   document.getElementById("resumoPlantoes").innerText = `Total: R$ ${total.toFixed(2)}`;
@@ -72,11 +79,12 @@ document.getElementById("filtroMes").addEventListener("change", atualizarTabela)
 
 // Exportar CSV
 document.getElementById("exportarCSV").addEventListener("click", () => {
-  let csv = "Data,Hospital,Carga Horária,Valor\n";
+  let csv = "Data,Hospital,Tipo,Carga Horária,Valor\n";
   const lista = aplicarFiltros(plantoes);
 
   lista.forEach(p => {
-    csv += `${p.data},${p.hospital},${p.cargaHoraria || "-"},${p.valor}\n`;
+    const cargaHoraria = (p.tipo === "EVOLUCAO" || p.tipo === "SOBREAVISO") ? "-" : (p.horas || "-");
+    csv += `${formatarData(p.data)},${p.hospital || "-"},${p.tipo},${cargaHoraria},${p.valor || 0}\n`;
   });
 
   const blob = new Blob([csv], { type: "text/csv" });
@@ -87,4 +95,3 @@ document.getElementById("exportarCSV").addEventListener("click", () => {
   a.click();
   URL.revokeObjectURL(url);
 });
-

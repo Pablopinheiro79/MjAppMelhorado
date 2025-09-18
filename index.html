@@ -4,11 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - MJ App</title>
+  <!-- Favicon padrão -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.jpg">
+  <link rel="apple-touch-icon" href="icon-192.jpg">
+  <link rel="manifest" href="manifest.json">
+
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo">
+    <img src="LOGO MJ.jpg" alt="Logo MJ" class="logo">
     <h2>Bem-vindo ao MJ App</h2>
 
     <form id="loginForm">
@@ -26,6 +31,11 @@
   </div>
 
   <script type="module" src="auth.js"></script>
+  <div id="loader" style="display:none; color:yellow; font-weight:bold; text-align:center;">
+  Carregando...
+</div>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
 

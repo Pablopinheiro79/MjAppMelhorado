@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meus Plantões - MJ App</title>
+  <!-- Favicon padrão -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.jpg">
+  <link rel="apple-touch-icon" href="icon-192.jpg">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 
   <!-- Toastify -->
@@ -12,7 +16,7 @@
 </head>
 <body>
   <div class="container">
-    <img src="LOGO MJ.jpeg" alt="Logo MJ" class="logo">
+    <img src="LOGO MJ.jpg" alt="Logo MJ" class="logo">
 
     <h2>Meus Plantões</h2>
 
@@ -51,6 +55,7 @@
         <tr>
           <th>Data</th>
           <th>Hospital</th>
+          <th>Tipo</th>
           <th>Carga Horária</th>
           <th>Valor</th>
         </tr>
@@ -66,12 +71,11 @@
     <!-- Botões -->
     <div class="button-group">
       <button id="exportarCSV" class="btn">Exportar para CSV</button>
-      <a href="registrar.html" class="btn-outline">Voltar ao Registro</a>
+      <a href="dashboard.html" class="btn-outline">Voltar ao Menu</a>
     </div>
   </div>
 
   <script type="module" src="meus-plantoes.js"></script>
 </body>
 </html>
-
 
